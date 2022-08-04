@@ -46,13 +46,13 @@ def load_pieces(resolution=4):
     :return: pieces, tdeviation
     """
     print('Message: load note data ...')
-    dir = os.getcwd() + "\\BPS_FH_Dataset\\"
+    dir = os.getcwd() + "/BPS_FH_Dataset/"
     dt = [('onset', 'float'), ('pitch', 'int'), ('mPitch', 'int'), ('duration', 'float'), ('staffNum', 'int'), ('measure', 'int')] # datatype
     highest_pitch = 0
     lowest_pitch = 256
     pieces = {str(k): {'pianoroll': None, 'chromagram': None, 'start_time': None} for k in range(1,33)}
     for i in range(1,33):
-        fileDir = dir + str(i) + "\\notes.csv"
+        fileDir = dir + str(i) + "/notes.csv"
         notes = np.genfromtxt(fileDir, delimiter=',', dtype=dt) # read notes from .csv file
         total_length = math.ceil((max(notes['onset'] + notes['duration']) - notes[0]['onset']) * resolution) # length of pianoroll
         start_time = notes[0]['onset']
@@ -84,11 +84,11 @@ def load_pieces(resolution=4):
 
 def load_chord_labels(vocabulary='MIREX_Mm'):
     print('Message: load chord labels...')
-    dir = os.getcwd() + "\\BPS_FH_Dataset\\"
+    dir = os.getcwd() + "/BPS_FH_Dataset/"
     dt = [('onset', 'float'), ('duration', 'float'), ('key', '<U10'), ('degree1', '<U10'), ('degree2', '<U10'), ('quality', '<U10'), ('inversion', 'int'), ('rchord', '<U10')] # datatype
     chord_labels = {str(k): None for k in range(1,33)}
     for i in range(1,33):
-        fileDir = dir + str(i) + "\\chords.xlsx"
+        fileDir = dir + str(i) + "/chords.xlsx"
         workbook = xlrd.open_workbook(fileDir)
         sheet = workbook.sheet_by_index(0)
         labels = []

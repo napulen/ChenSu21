@@ -841,7 +841,7 @@ if __name__ == '__main__':
                                   'n_in_succession',
                                   'annealing_rate'])
 
-    hp = hyperparameters(dataset='Preludes', # {'BPS_FH', 'Preludes'}
+    hp = hyperparameters(dataset='BPS_FH', # {'BPS_FH', 'Preludes'}
                          test_set_id=1,
                          graph_location='model',
                          n_steps=128,
