@@ -257,8 +257,8 @@ def train_HT():
     # Graph location and summary writers
     print('Saving graph to: %s' % hp.graph_location)
     merged = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(hp.graph_location + '\\train')
-    test_writer = tf.summary.FileWriter(hp.graph_location + '\\test')
+    train_writer = tf.summary.FileWriter(hp.graph_location + '/train')
+    test_writer = tf.summary.FileWriter(hp.graph_location + '/test')
     train_writer.add_graph(tf.get_default_graph())
     test_writer.add_graph(tf.get_default_graph())
     saver = tf.train.Saver(max_to_keep=1)
@@ -381,7 +381,7 @@ def train_HT():
                     in_succession = 0
                     # Save variables of the model
                     print('*saving variables...\n')
-                    saver.save(sess, hp.graph_location + '\\HT_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
+                    saver.save(sess, hp.graph_location + '/HT_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
                 else:
                     in_succession += 1
                     if in_succession > hp.n_in_succession:
@@ -486,8 +486,8 @@ def train_BTC():
     # Graph location and summary writers
     print('Saving graph to: %s' % hp.graph_location)
     merged = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(hp.graph_location + '\\train')
-    test_writer = tf.summary.FileWriter(hp.graph_location + '\\test')
+    train_writer = tf.summary.FileWriter(hp.graph_location + '/train')
+    test_writer = tf.summary.FileWriter(hp.graph_location + '/test')
     train_writer.add_graph(tf.get_default_graph())
     test_writer.add_graph(tf.get_default_graph())
     saver = tf.train.Saver(max_to_keep=1)
@@ -592,7 +592,7 @@ def train_BTC():
                     in_succession = 0
                     # Save variables of the model
                     print('*saving variables...\n')
-                    saver.save(sess, hp.graph_location + '\\BTC_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
+                    saver.save(sess, hp.graph_location + '/BTC_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
                 else:
                     in_succession += 1
                     if in_succession > hp.n_in_succession:
@@ -698,8 +698,8 @@ def train_CRNN():
     # Graph location and summary writers
     print('Saving graph to: %s' % hp.graph_location)
     merged = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(hp.graph_location + '\\train')
-    test_writer = tf.summary.FileWriter(hp.graph_location + '\\test')
+    train_writer = tf.summary.FileWriter(hp.graph_location + '/train')
+    test_writer = tf.summary.FileWriter(hp.graph_location + '/test')
     train_writer.add_graph(tf.get_default_graph())
     test_writer.add_graph(tf.get_default_graph())
     saver = tf.train.Saver(max_to_keep=1)
@@ -804,7 +804,7 @@ def train_CRNN():
                     in_succession = 0
                     # Save variables of the model
                     print('*saving variables...\n')
-                    saver.save(sess, hp.graph_location + '\\CRNN_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
+                    saver.save(sess, hp.graph_location + '/CRNN_functional_harmony_recognition_' + hp.dataset + '_' + str(hp.test_set_id) + '.ckpt')
                 else:
                     in_succession += 1
                     if in_succession > hp.n_in_succession:
