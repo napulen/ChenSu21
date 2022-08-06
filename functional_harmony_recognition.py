@@ -1,3 +1,4 @@
+from tkinter import N
 import numpy as np
 import tensorflow as tf # version = 1.8.0
 import time
@@ -22,6 +23,7 @@ for i_a, accidental in enumerate(['', '#', 'b']):
         elif accidental == 'b':
             key_dict[tonic + '-'] = i_a * 14 + i_t
 key_dict['pad'] = 42
+key_decoder_dict = {v: k for k, v in key_dict.items() if not "+" in k[1:] and not "b" in k[1:]}
 
 '''degree1: 10 (['1', '2', '3', '4', '5', '6', '7', '-2', '-7', 'pad'])'''
 degree1_dict = {d1: i for i, d1 in enumerate(['1', '2', '3', '4', '5', '6', '7', '-2', '-7', 'pad'])}
@@ -32,6 +34,15 @@ degree2_dict = {d2: i for i, d2 in enumerate(['1', '2', '3', '4', '5', '6', '7',
 '''quality: 11 (['M', 'm', 'a', 'd', 'M7', 'm7', 'D7', 'd7', 'h7', 'a6', 'pad'])'''
 quality_dict = {q: i for i, q in enumerate(['M', 'm', 'a', 'd', 'M7', 'm7', 'D7', 'd7', 'h7', 'a6', 'pad'])}
 quality_dict['a7'] = [v for k, v in quality_dict.items() if k == 'a'][0]
+
+roman_decoder_dict = {}
+for d1, d1idx in degree1_dict.items():
+    for d2, d2idx in degree2_dict.items():
+        for q, qidx in quality_dict.items():
+            for i in range(4):
+                idx = i + qidx * 4 + d2idx * 4 * 10 + d1idx * 4 * 10 * 14
+                roman_decoder_dict[idx] = (d1, d2, q, i)
+roman_decoder_dict[4* 10 * 14 * 9] = "pad"
 
 def load_data_functional(dir, test_set_id=1, sequence_with_overlap=True):
     if test_set_id not in [1, 2, 3, 4]:
@@ -395,9 +406,14 @@ def train_HT():
         print('best score =', np.round(best_score, 4))
         print('best slope =', best_slope)
 
-def inference_HT(model_checkpoint, annealing_slope=1.0):
+def inference_HT(model_checkpoint, test_data=None, annealing_slope=1.0):
     print('Run HT functional for inference: %s...' % (model_checkpoint))
-    _, test_data = load_data_functional(dir=hp.dataset + '_preprocessed_data_MIREX_Mm.pickle', test_set_id=hp.test_set_id, sequence_with_overlap=hp.train_sequence_with_overlap)
+    if not test_data:
+        _, test_data = load_data_functional(
+            dir=hp.dataset + '_preprocessed_data_MIREX_Mm.pickle', 
+            test_set_id=hp.test_set_id, 
+            sequence_with_overlap=hp.train_sequence_with_overlap
+        )
 
     with tf.name_scope('placeholder'):
         x_p = tf.placeholder(tf.int32, [None, hp.n_steps, 88], name="pianoroll")
@@ -440,9 +456,11 @@ def inference_HT(model_checkpoint, annealing_slope=1.0):
     return test_pred_cc, test_pred_k, test_pred_r
 
 def main():
+    pretrained_path = "model/HT_functional_harmony_recognition_BPS_FH_1.ckpt"
+    pretrained_slope = 3.4522712143931042
     # Functional harmony recognition
     train_HT() # Harmony Transformer
-    inference_HT("model/HT_functional_harmony_recognition_BPS_FH_1.ckpt")
+    # inference_HT(pretrained_path, annealing_slope=pretrained_slope) # Harmony Transformer
     # train_BTC() # Bi-directional Transformer for Chord Recognition
     # train_CRNN() # Convolutional Recurrent Neural Network
 
