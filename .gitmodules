@@ -1,0 +1,3 @@
+[submodule "AugmentedNet"]
+	path = AugmentedNet
+	url = https://github.com/napulen/AugmentedNet.git
