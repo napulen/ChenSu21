@@ -32,14 +32,31 @@ degree1_dict = {d1: i for i, d1 in enumerate(['1', '2', '3', '4', '5', '6', '7',
 '''degree2: 15 ['1', '2', '3', '4', '5', '6', '7', '+1', '+3', '+4', '-2', '-3', '-6', '-7', 'pad'])'''
 degree2_dict = {d2: i for i, d2 in enumerate(['1', '2', '3', '4', '5', '6', '7', '+1', '+3', '+4', '-2', '-3', '-6', '-7', 'pad'])}
 
+degree_decoder_dict = {
+    "1": "P1",
+    "2": "M2",
+    "3": "M3",
+    "4": "P4",
+    "5": "P5",
+    "6": "M6",
+    "7": "M7",
+    "-2": "m2",
+    "-3": "m3",
+    "-6": "m6",
+    "-7": "m7",
+    "+1": "A1",
+    "+3": "A3",
+    "+4": "A4",
+}
+
 '''quality: 11 (['M', 'm', 'a', 'd', 'M7', 'm7', 'D7', 'd7', 'h7', 'a6', 'pad'])'''
 quality_dict = {q: i for i, q in enumerate(['M', 'm', 'a', 'd', 'M7', 'm7', 'D7', 'd7', 'h7', 'a6', 'pad'])}
 quality_dict['a7'] = [v for k, v in quality_dict.items() if k == 'a'][0]
 
 roman_decoder_dict = {}
-for d1, d1idx in degree1_dict.items():
-    for d2, d2idx in degree2_dict.items():
-        for q, qidx in quality_dict.items():
+for d1idx, d1 in enumerate(['1', '2', '3', '4', '5', '6', '7', '-2', '-7']):
+    for d2idx, d2 in enumerate(['1', '2', '3', '4', '5', '6', '7', '+1', '+3', '+4', '-2', '-3', '-6', '-7']):
+        for qidx, q in enumerate(['M', 'm', 'a', 'd', 'M7', 'm7', 'D7', 'd7', 'h7', 'a6']):
             for i in range(4):
                 idx = i + qidx * 4 + d2idx * 4 * 10 + d1idx * 4 * 10 * 14
                 roman_decoder_dict[idx] = (d1, d2, q, i)
