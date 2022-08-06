@@ -7,6 +7,17 @@
 - Run `python BPS_FH_preprocessing.py` to generate the `.pickle` file
 - Run `python functional_harmony_recognition.py` to train the model
 
+## About the pretrained model
+
+```
+HT functional harmony recognition on BPS_FH-1:
+training time = 9.19 hr
+best epoch =  13
+best score = [0.7792 0.4139 0.7853 0.7413 0.7626 0.7455]
+best slope = 3.4522712143931042
+Run HT functional for inference: model/HT_functional_harmony_recognition_BPS_FH_1.ckpt...
+```
+
 # Harmony-Transformer-v2
 
 An improved version of the [Harmony Transformer](https://github.com/Tsung-Ping/Harmony-Transformer). We evaluated the new model in terms of automatic chord recognition for symbolic music. For more details, please refer to ["Attend to Chords: Improving Harmonic Analysis of Symbolic Music Using Transformer-Based Models" (TISMIR 2021)](https://transactions.ismir.net/articles/10.5334/tismir.65/).
