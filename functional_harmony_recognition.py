@@ -1,3 +1,4 @@
+from email.policy import default
 from tkinter import N
 import numpy as np
 import tensorflow as tf # version = 1.8.0
@@ -162,7 +163,8 @@ def comput_PRF_with_pre(TP, FP, FN):
     F1 = tf.cond(tf.is_nan(F1), lambda: tf.constant(0.0), lambda: F1)
     return precision, recall, F1
 
-def train_HT():
+def train_HT(hyperparameters=None):
+    hp = hyperparameters or default_hyperparameters()
     print('Run HT functional harmony recognition on %s-%d...' % (hp.dataset, hp.test_set_id))
 
     # Load training and testing data
@@ -406,7 +408,8 @@ def train_HT():
         print('best score =', np.round(best_score, 4))
         print('best slope =', best_slope)
 
-def inference_HT(model_checkpoint, test_data=None, annealing_slope=1.0):
+def inference_HT(model_checkpoint, test_data=None, annealing_slope=1.0, hyperparameters=None):
+    hp = hyperparameters or default_hyperparameters()
     print('Run HT functional for inference: %s...' % (model_checkpoint))
     if not test_data:
         _, test_data = load_data_functional(
@@ -464,8 +467,7 @@ def main():
     # train_BTC() # Bi-directional Transformer for Chord Recognition
     # train_CRNN() # Convolutional Recurrent Neural Network
 
-if __name__ == '__main__':
-    # Hyperparameters
+def default_hyperparameters():
     hyperparameters = namedtuple('hyperparameters',
                                  ['dataset',
                                   'test_set_id',
@@ -496,6 +498,8 @@ if __name__ == '__main__':
                          n_training_steps=100000,
                          n_in_succession=10,
                          annealing_rate=1.1)
+    return hp
 
+if __name__ == '__main__':
     main()
 
