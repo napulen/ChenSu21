@@ -151,6 +151,50 @@ def comput_PRF_with_pre(TP, FP, FN):
     F1 = tf.cond(tf.is_nan(F1), lambda: tf.constant(0.0), lambda: F1)
     return precision, recall, F1
 
+def inference_HT(model_checkpoint, annealing_slope=1.0):
+    print('Run HT functional for inference: %s...' % (model_checkpoint))
+    _, test_data = load_data_functional(dir=hp.dataset + '_preprocessed_data_MIREX_Mm.pickle', test_set_id=hp.test_set_id, sequence_with_overlap=hp.train_sequence_with_overlap)
+
+    with tf.name_scope('placeholder'):
+        x_p = tf.placeholder(tf.int32, [None, hp.n_steps, 88], name="pianoroll")
+        x_len = tf.placeholder(tf.int32, [None], name="seq_lens")
+        dropout = tf.placeholder(dtype=tf.float32, name="dropout_rate")
+        is_training = tf.placeholder(dtype=tf.bool, name="is_training")
+        slope = tf.placeholder(dtype=tf.float32, name='annealing_slope')
+
+    with tf.name_scope('model'):
+        x_in = tf.cast(x_p, tf.float32)
+        source_mask = tf.sequence_mask(lengths=x_len, maxlen=hp.n_steps, dtype=tf.float32) # [n_batches, n_steps]
+        target_mask = source_mask
+        chord_change_logits, dec_input_embed, _, _, _, _ = crm.HTv2(x_in, source_mask, target_mask, slope, dropout, is_training, hp)
+
+    with tf.variable_scope("output_projection"):
+        n_key_classes = 42 + 1
+        n_roman_classes = 9 * 14 * 10 * 4 + 1
+        dec_input_embed = tf.layers.dropout(dec_input_embed, rate=dropout, training=is_training)
+        key_logits = tf.layers.dense(dec_input_embed, n_key_classes)
+        roman_logits = tf.layers.dense(dec_input_embed, n_roman_classes)
+
+    with tf.name_scope('evaluation'):
+        pred_cc = tf.cast(tf.round(tf.sigmoid(slope*chord_change_logits)), tf.int32)
+        pred_k = tf.argmax(key_logits, axis=2, output_type=tf.int32)
+        pred_r = tf.argmax(roman_logits, axis=2, output_type=tf.int32)
+
+    saver = tf.train.Saver(max_to_keep=1)
+
+    # Inference
+    print('Run the model...')
+    with tf.Session() as sess:
+        saver.restore(sess, model_checkpoint)
+        test_run_list = [pred_cc, pred_k, pred_r]
+        test_feed_fict = {x_p: test_data['pianoroll'],
+                          x_len: test_data['len'],
+                          dropout: 0.0,
+                          is_training: False,
+                          slope: annealing_slope}
+        test_pred_cc, test_pred_k, test_pred_r = sess.run(test_run_list, feed_dict=test_feed_fict)
+    return test_pred_cc, test_pred_k, test_pred_r
+
 def train_HT():
     print('Run HT functional harmony recognition on %s-%d...' % (hp.dataset, hp.test_set_id))
 
@@ -820,6 +864,7 @@ def train_CRNN():
 def main():
     # Functional harmony recognition
     train_HT() # Harmony Transformer
+    inference_HT("model/HT_functional_harmony_recognition_BPS_FH_1.ckpt")
     # train_BTC() # Bi-directional Transformer for Chord Recognition
     # train_CRNN() # Convolutional Recurrent Neural Network
 
