@@ -181,13 +181,18 @@ def inference_and_rntxt_annotation(
 
     chords = df[df.HarmonicRhythm_ChenSu == 0]
     s = m21parse(inputPath)
+    ts = {
+        (ts.measureNumber, float(ts.beat)): ts.ratioString
+        for ts in s.flat.getElementsByClass("TimeSignature")
+    }
+    schord = s.chordify().flat.notesAndRests
     # remove all lyrics from score
-    for note in s.recurse().notes:
-        note.lyrics = []
+    # for note in s.recurse().notes:
+    #     note.lyrics = []
     prevkey = ""
     for analysis in chords.itertuples():
         notes = []
-        for n in s.flat.notes.getElementsByOffset(analysis.Index):
+        for n in schord.getElementsByOffset(analysis.Index):
             if isinstance(n, Note):
                 notes.append((n, n.pitch.midi))
             elif isinstance(n, Chord) and not isinstance(n, NoChord):
@@ -206,7 +211,7 @@ def inference_and_rntxt_annotation(
         else:
             rn2fig = rn2
         bass.addLyric(formatRomanNumeral(rn2fig, thiskey))
-    rntxt = generateRomanText(s)
+    rntxt = generateRomanText(schord, ts)
     rntxt = rntxt.replace(
         "AugmentedNet v1.9.0 - https://github.com/napulen/AugmentedNet",
         "Chen and Su 2021, translated by napulen - https://github.com/napulen/ChenSu21",
